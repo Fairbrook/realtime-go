@@ -7,6 +7,7 @@ import (
 	"log"
 	"net"
 	"regexp"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -274,7 +275,7 @@ func (c *RealtimeClient) SendHeartbeat() error {
 		Type:  "heartbeat",
 		Topic: "phoenix",
 		Event: "heartbeat",
-		Ref:   string(c.NextRef()),
+		Ref:   strconv.Itoa(c.NextRef()),
 	}
 
 	fmt.Printf("%v", heartbeatMsg)
