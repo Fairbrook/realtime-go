@@ -267,10 +267,11 @@ func (c *RealtimeClient) startHeartbeat() {
 // SendHeartbeat sends a heartbeat message to the server
 func (c *RealtimeClient) SendHeartbeat() error {
 	heartbeatMsg := struct {
-		Type  string `json:"type"`
-		Topic string `json:"topic"`
-		Event string `json:"event"`
-		Ref   string `json:"ref"`
+		Type    string   `json:"type"`
+		Topic   string   `json:"topic"`
+		Event   string   `json:"event"`
+		Ref     string   `json:"ref"`
+		Payload struct{} `json:"payload"`
 	}{
 		Type:  "heartbeat",
 		Topic: "phoenix",
