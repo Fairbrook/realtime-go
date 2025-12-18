@@ -34,7 +34,8 @@ type ChannelConfig struct {
 		Self bool `json:"self"`
 	} `json:"broadcast"`
 	Presence struct {
-		Key string `json:"key"`
+		Key     string `json:"key"`
+		Enabled bool   `json:"enabled"`
 	} `json:"presence"`
 	Private bool `json:"private"`
 }
