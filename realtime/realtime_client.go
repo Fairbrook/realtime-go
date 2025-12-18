@@ -79,7 +79,7 @@ func NewRealtimeClient(projectRef string, apiKey string) IRealtimeClient {
 	config := NewConfig()
 	if ContainsIPOrLocalhost(projectRef) {
 		config.URL = fmt.Sprintf(
-			"ws://%s/realtime/v1/websocket?apikey=%s&log_level=info&vsn=1.0.0",
+			"ws://%s/socket/websocket?apikey=%s&log_level=info&vsn=1.0.0",
 			projectRef,
 			apiKey,
 		)
