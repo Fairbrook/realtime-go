@@ -34,7 +34,7 @@ type RealtimeClient struct {
 	authToken      string
 	ref            int
 	refMu          sync.Mutex
-	hbTimer        *time.Timer
+	hbTicker       *time.Ticker
 	hbStop         chan struct{}
 	reconnMu       sync.Mutex
 	isReconnecting bool
@@ -148,8 +148,8 @@ func (w *websocketConnWrapper) SetWriteLimit(limit int64) {
 func (c *RealtimeClient) Disconnect() error {
 	if c.conn != nil {
 		close(c.hbStop)
-		if c.hbTimer != nil {
-			c.hbTimer.Stop()
+		if c.hbTicker != nil {
+			c.hbTicker.Stop()
 		}
 		return c.conn.Close(websocket.StatusNormalClosure, "Closing the connection")
 	}
@@ -246,12 +246,12 @@ func (c *RealtimeClient) handleMessages() {
 }
 
 func (c *RealtimeClient) startHeartbeat() {
-	c.hbTimer = time.NewTimer(c.config.HBInterval)
-	defer c.hbTimer.Stop()
+	c.hbTicker = time.NewTicker(c.config.HBInterval)
+	defer c.hbTicker.Stop()
 
 	for {
 		select {
-		case <-c.hbTimer.C:
+		case <-c.hbTicker.C:
 			if err := c.SendHeartbeat(); err != nil {
 				c.logger.Printf("Error sending heartbeat: %v", err)
 				if c.config.AutoReconnect {
