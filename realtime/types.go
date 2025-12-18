@@ -143,7 +143,7 @@ func NewConfig() *Config {
 	return &Config{
 		URL:            "wss://realtime.supabase.com",
 		AutoReconnect:  true,
-		HBInterval:     30 * time.Second,
+		HBInterval:     20 * time.Second,
 		MaxRetries:     5,
 		InitialBackoff: time.Second,
 		Timeout:        30 * time.Second,
