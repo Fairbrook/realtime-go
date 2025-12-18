@@ -277,6 +277,8 @@ func (c *RealtimeClient) SendHeartbeat() error {
 		Ref:   c.NextRef(),
 	}
 
+	log.Printf("%v", heartbeatMsg)
+
 	data, err := json.Marshal(heartbeatMsg)
 	if err != nil {
 		return err
