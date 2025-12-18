@@ -204,7 +204,7 @@ func (c *RealtimeClient) RemoveChannel(ch Channel) error {
 // RemoveAllChannels removes all channels from the client
 func (c *RealtimeClient) RemoveAllChannels() error {
 	c.mu.Lock()
-	defer c.mu.Unlock()
+	defer c.m<Find>u.Unlock()
 
 	for _, ch := range c.channels {
 		if err := ch.Unsubscribe(); err != nil {
@@ -285,7 +285,8 @@ func (c *RealtimeClient) SendHeartbeat() error {
 	if err != nil {
 		return err
 	}
-	return c.conn.Write(context.Background(), websocket.MessageText, data)
+	ctx := context.WithTimeout(context.Background(), 2*time.Second)
+	return c.conn.Write(ctx, websocket.MessageText, data)
 }
 
 func (c *RealtimeClient) reconnect() {
