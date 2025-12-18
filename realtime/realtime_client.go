@@ -257,8 +257,11 @@ func (c *RealtimeClient) startHeartbeat() {
 				if c.config.AutoReconnect {
 					go c.reconnect()
 				}
+			} else {
+				c.logger.Println("Success send heartbeat")
 			}
 		case <-c.hbStop:
+			c.logger.Println("Stop heartbeat")
 			return
 		}
 	}
@@ -285,7 +288,8 @@ func (c *RealtimeClient) SendHeartbeat() error {
 	if err != nil {
 		return err
 	}
-	ctx, _ := context.WithTimeout(context.Background(), 2*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
 	return c.conn.Write(ctx, websocket.MessageText, data)
 }
 
