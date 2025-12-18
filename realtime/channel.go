@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"sync"
 
 	"nhooyr.io/websocket"
@@ -18,6 +19,8 @@ type channel struct {
 	postgresHandlers  map[string]func(PostgresChangeEvent)
 	callbacks         map[string][]interface{}
 	mu                sync.RWMutex
+	refMu             sync.Mutex
+	ref               int
 	joinedOnce        bool
 }
 
@@ -31,6 +34,13 @@ func newChannel(topic string, config *ChannelConfig, client *RealtimeClient) *ch
 		postgresHandlers:  make(map[string]func(PostgresChangeEvent)),
 		callbacks:         make(map[string][]interface{}),
 	}
+}
+
+func (c *channel) NextRef() int {
+	c.refMu.Lock()
+	defer c.refMu.Unlock()
+	c.ref++
+	return c.ref
 }
 
 func (ch *channel) Subscribe(ctx context.Context, callback func(SubscribeState, error)) error {
@@ -47,11 +57,13 @@ func (ch *channel) Subscribe(ctx context.Context, callback func(SubscribeState, 
 		Topic   string      `json:"topic"`
 		Event   string      `json:"event"`
 		Payload interface{} `json:"payload"`
+		Ref     string      `json:"ref"`
 	}{
 		Type:    "subscribe",
 		Topic:   ch.topic,
 		Event:   "phx_join",
 		Payload: ch.config,
+		Ref:     strconv.Itoa(ch.NextRef()),
 	}
 
 	data, err := json.Marshal(subscribeMsg)
