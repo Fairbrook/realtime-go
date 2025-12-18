@@ -169,11 +169,13 @@ func (ch *channel) Track(payload interface{}) error {
 		Topic   string      `json:"topic"`
 		Event   string      `json:"event"`
 		Payload interface{} `json:"payload"`
+		Ref     string      `json:"ref"`
 	}{
 		Type:    "track",
 		Topic:   ch.topic,
 		Event:   "track",
 		Payload: payload,
+		Ref:     strconv.Itoa(ch.NextRef()),
 	}
 
 	data, err := json.Marshal(trackMsg)
