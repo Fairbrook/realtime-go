@@ -171,7 +171,7 @@ func (ch *channel) Track(payload interface{}) error {
 		Payload interface{} `json:"payload"`
 		Ref     string      `json:"ref"`
 	}{
-		Type:    "track",
+		Type:    "presence",
 		Topic:   ch.topic,
 		Event:   "track",
 		Payload: payload,
