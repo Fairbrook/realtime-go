@@ -269,15 +269,15 @@ func (c *RealtimeClient) SendHeartbeat() error {
 		Type  string `json:"type"`
 		Topic string `json:"topic"`
 		Event string `json:"event"`
-		Ref   int    `json:"ref"`
+		Ref   string `json:"ref"`
 	}{
 		Type:  "heartbeat",
 		Topic: "phoenix",
 		Event: "heartbeat",
-		Ref:   c.NextRef(),
+		Ref:   string(c.NextRef()),
 	}
 
-	log.Printf("%v", heartbeatMsg)
+	fmt.Printf("%v", heartbeatMsg)
 
 	data, err := json.Marshal(heartbeatMsg)
 	if err != nil {
