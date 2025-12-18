@@ -37,14 +37,57 @@ type RealtimeClient struct {
 	logger         *log.Logger
 }
 
+  func containsIPOrLocalhost(s string) bool {       
+        // Check for localhost                      
+        if strings.Contains(strings.ToLower(s), "localhost") {                                           
+                return true                         
+        }                                                                                                                                        
+        // Check for IP addresses within the string using regex                                          
+        // IPv4 pattern                             
+        ipv4Pattern := `\b(?:\d{1,3}\.){3}\d{1,3}\b`                                                                                                                                                              
+        ipv4Regex := regexp.MustCompile(ipv4Pattern)
+                                                    
+        if matches := ipv4Regex.FindAllString(s, -1); len(matches) > 0 {                                 
+                // Validate each match is a valid IP
+                for _, match := range matches {                                                                                                                                                                   
+                        if net.ParseIP(match) != nil {                                                                                                                                                            
+                                return true                                                                                                                                                                       
+                        }                           
+                }                                   
+        }                                           
+
+        // IPv6 pattern (simplified - matches common formats)                                            
+        ipv6Pattern := `\b(?:[0-9a-fA-F]{0,4}:){2,7}[0-9a-fA-F]{0,4}\b`                                  
+        ipv6Regex := regexp.MustCompile(ipv6Pattern)
+
+        if matches := ipv6Regex.FindAllString(s, -1); len(matches) > 0 {                                 
+                for _, match := range matches {     
+                        if net.ParseIP(match) != nil {                                                   
+                                return true         
+                        }                           
+                }                                   
+        }                                           
+
+        return false                                
+  }  
+
 // NewRealtimeClient creates a new RealtimeClient instance
 func NewRealtimeClient(projectRef string, apiKey string) IRealtimeClient {
 	config := NewConfig()
-	config.URL = fmt.Sprintf(
+	if containsIPOrlLocalhost(projectRef){
+		config.URL = fmt.Sprintf(
+		"ws://%s/realtime/v1/websocket?apikey=%s&log_level=info&vsn=1.0.0",
+		projectRef,
+		apiKey,
+		)
+	}else{
+		config.URL = fmt.Sprintf(
 		"wss://%s.supabase.co/realtime/v1/websocket?apikey=%s&log_level=info&vsn=1.0.0",
 		projectRef,
 		apiKey,
-	)
+		)
+		}
+	
 	config.APIKey = apiKey
 
 	return &RealtimeClient{
